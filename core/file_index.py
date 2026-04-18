@@ -75,16 +75,16 @@ class FileIndex:
         print(f"[INDEX] Optimization: Sorting {len(self.all_files)} items for Binary Search...", end='', flush=True)
         t0 = time.time()
 
-        # 1. Prefix Index: Sort by lowercase name for 'start*' queries
+        # 1. Prefix Index: Sort by casefolded name for Unicode-aware matching
         # We store tuples (key, entry) to allow bisecting on the key
         self.prefix_index = sorted(
-            [(e.path.name.lower(), e) for e in self.all_files],
+            [(e.path.name.casefold(), e) for e in self.all_files],
             key=lambda x: x[0]
         )
 
-        # 2. Suffix Index: Sort by REVERSED lowercase name for '*.ext' queries
+        # 2. Suffix Index: Sort by reversed casefolded name for '*.ext' queries
         self.suffix_index = sorted(
-            [(e.path.name.lower()[::-1], e) for e in self.all_files],
+            [(e.path.name.casefold()[::-1], e) for e in self.all_files],
             key=lambda x: x[0]
         )
         
@@ -115,6 +115,11 @@ class FileIndex:
                 buffer.write(struct.pack('<q', size))
                 buffer.write(struct.pack('<L', parent_id))
                 self._write_string(buffer, name)
+
+    @staticmethod
+    def _decode_caf_bytes(raw: bytes) -> str:
+        """Decode null-terminated CAF strings as UTF-8."""
+        return raw.decode('utf-8')
     
     @classmethod
     def load_from_caf(cls, caf_path: Path, use_hash: bool, hash_algo: str) -> Optional['FileIndex']:
@@ -176,7 +181,7 @@ class FileIndex:
                     end_pos = data.find(b'\x00', offset)
                     if end_pos == -1: filename = ""
                     else:
-                        filename = data[offset:end_pos].decode('latin-1', errors='replace')
+                        filename = cls._decode_caf_bytes(data[offset:end_pos])
                         offset = end_pos + 1
                     
                     raw_elm.append((mtime, size, parent_id, filename))
@@ -221,14 +226,14 @@ class FileIndex:
 
     @staticmethod 
     def _read_caf_string_fast(buffer) -> str:
-        """Fast string reading like original Cathy - latin-1 for speed."""
+        """Fast UTF-8 string reading for CAF files."""
         chars = bytearray()
         while True:
             char = buffer.read(1)
             if not char or char == b'\x00':
                 break
             chars.extend(char)
-        return chars.decode('latin-1', errors='replace')
+        return FileIndex._decode_caf_bytes(bytes(chars))
 
     def _ensure_indexes_built(self):
         """This method is no longer needed since we build indexes during load."""
@@ -701,10 +706,10 @@ class FileIndex:
         while (char := buffer.read(1)) != b'\x00':
             if not char: break
             chars.extend(char)
-        return chars.decode('latin-1', errors='replace')
+        return FileIndex._decode_caf_bytes(bytes(chars))
     @staticmethod
     def _write_string(buffer, text: str):
-        buffer.write(text.encode('latin-1', errors='replace'))
+        buffer.write(text.encode('utf-8'))
         buffer.write(b'\x00')
     
     

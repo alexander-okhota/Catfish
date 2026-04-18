@@ -32,7 +32,7 @@ class UniversalSearchApp:
         self.config = Config()
         
         # Apply language setting
-        t.set_language(self.config.get('language', 'en'))
+        t.set_language(self.config.get('language', 'ru'))
         
         self.root = tk.Tk()
         self.root.title(t.get('app_title'))
@@ -439,9 +439,9 @@ class UniversalSearchApp:
         lang_frame = ttk.LabelFrame(main_frame, text=t.get('language'), padding=10)
         lang_frame.pack(fill=tk.X, pady=(0, 10))
         
-        self.language_var = tk.StringVar(value=self.config.get('language', 'en'))
+        self.language_var = tk.StringVar(value=self.config.get('language', 'ru'))
         lang_combo = ttk.Combobox(lang_frame, textvariable=self.language_var, 
-                                 values=['en', 'de'], width=10, state='readonly')
+                                 values=['en', 'de', 'ru'], width=10, state='readonly')
         lang_combo.pack(side=tk.LEFT)
         
         # Hash algorithm settings
@@ -1165,7 +1165,7 @@ class UniversalSearchApp:
     def apply_settings(self):
         """Apply changed settings."""
         # Save language setting
-        old_lang = self.config.get('language', 'en')
+        old_lang = self.config.get('language', 'ru')
         new_lang = self.language_var.get()
         self.config.set('language', new_lang)
         

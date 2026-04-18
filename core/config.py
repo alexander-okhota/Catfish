@@ -11,7 +11,7 @@ class Config:
     def __init__(self):
         self.config_file = Path.home() / '.universal_search_config.json'
         self.default_config = {
-            'language': 'en',
+            'language': 'ru',
             'default_hash_algo': 'md5',
             'auto_load_indices': True,
             'index_search_locations': [

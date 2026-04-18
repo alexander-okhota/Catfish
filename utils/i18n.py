@@ -14,14 +14,22 @@ class Translator:
         # Method 1: Check environment variables first
         for env_var in ['LANG', 'LANGUAGE', 'LC_ALL', 'LC_MESSAGES']:
             lang = os.environ.get(env_var)
-            if lang and lang.lower().startswith('de'):
-                return 'de'
+            if lang:
+                lang = lang.lower()
+                if lang.startswith('de'):
+                    return 'de'
+                if lang.startswith('ru'):
+                    return 'ru'
         
         # Method 2: Use locale.getlocale() (more reliable than getdefaultlocale)
         try:
             current_locale = locale.getlocale()
-            if current_locale[0] and current_locale[0].lower().startswith('de'):
-                return 'de'
+            if current_locale[0]:
+                locale_code = current_locale[0].lower()
+                if locale_code.startswith('de'):
+                    return 'de'
+                if locale_code.startswith('ru'):
+                    return 'ru'
         except:
             pass
         
@@ -34,22 +42,28 @@ class Translator:
                 # German locales have LCID starting with 0x04 (like 0x0407 for de-DE)
                 if (lcid & 0xFF) == 0x07:  # German primary language
                     return 'de'
+                if (lcid & 0xFF) == 0x19:  # Russian primary language
+                    return 'ru'
             except:
                 pass
         
         # Method 4: Fallback to getdefaultlocale() if nothing else works
         try:
             system_lang = locale.getdefaultlocale()[0]
-            if system_lang and system_lang.lower().startswith('de'):
-                return 'de'
+            if system_lang:
+                system_lang = system_lang.lower()
+                if system_lang.startswith('de'):
+                    return 'de'
+                if system_lang.startswith('ru'):
+                    return 'ru'
         except:
             pass
         
-        return 'en'  # Default fallback
+        return 'ru'  # Default fallback
 
     def __init__(self):
         """Initialize translator with improved locale detection."""
-        self.current_lang = 'en'
+        self.current_lang = 'ru'
         self.translations = {
             
                 'en': {
@@ -297,6 +311,133 @@ class Translator:
                     'no_indices': 'Keine Suchindices gefunden.',
                     'no_selection': 'Keine Dateien ausgewählt.',
                     'duplicate_folder': 'Dieser Ordner ist bereits in der Liste.',
+                },
+
+                'ru': {
+                    # Main Interface
+                    'app_title': 'Универсальный поиск и индексирование файлов',
+                    'search_tab': 'Поиск файлов',
+                    'manage_tab': 'Управление индексами',
+                    'duplicates_tab': 'Поиск дубликатов',
+                    'settings_tab': 'Настройки',
+
+                    # Search Interface
+                    'search_criteria': 'Критерии поиска',
+                    'name_pattern': 'Имя (regex):',
+                    'name_examples': 'Примеры: *.jpg, IMG_\\d+, (?i)отпуск',
+                    'size_range': 'Диапазон размера:',
+                    'size_examples': ' (например, 1MB, 500KB)',
+                    'date_range': 'Диапазон даты:',
+                    'date_examples': ' (YYYY-MM-DD или \'today\', \'yesterday\')',
+                    'search_button': 'Искать файлы',
+                    'clear_button': 'Очистить',
+                    'search_results': 'Результаты поиска',
+                    'filename_col': 'Имя файла',
+                    'size_col': 'Размер',
+                    'modified_col': 'Изменен',
+                    'path_col': 'Полный путь',
+                    'open_file': 'Открыть файл',
+                    'open_folder': 'Открыть папку',
+                    'copy_path': 'Копировать путь',
+                    'export_results': 'Экспорт результатов',
+                    'close_button': 'Закрыть',
+
+                    # Index Management
+                    'index_catalog': 'Каталог индексов',
+                    'available_indices': 'Доступные индексы',
+                    'create_index': 'Создать новый индекс',
+                    'refresh_indices': 'Обновить список',
+                    'delete_index': 'Удалить выбранный',
+                    'index_info': 'Информация об индексе',
+                    'root_path': 'Корневой путь:',
+                    'file_count': 'Файлы:',
+                    'total_size': 'Общий размер:',
+                    'created_date': 'Создан:',
+                    'hash_method': 'Метод хеширования:',
+
+                    # Duplicate Detection
+                    'source_folder': 'Исходная папка',
+                    'destination_folders': 'Целевые папки',
+                    'browse_button': 'Обзор...',
+                    'add_folder': 'Добавить папку',
+                    'remove_selected': 'Удалить выбранные',
+                    'clear_all': 'Очистить все',
+                    'options': 'Параметры',
+                    'use_hash': 'Использовать хеши файлов для сравнения',
+                    'reuse_indices': 'Повторно использовать существующие индексы',
+                    'force_recreation': 'Принудительно пересоздать индексы',
+                    'start_scan': 'Запустить сканирование',
+                    'new_scan': 'Новое сканирование',
+                    'exit_button': 'Выход',
+
+                    'method': 'Метод',
+                    'found': 'Найдено',
+                    'files_with_duplicates': 'файлов с дубликатами',
+                    'total_size': 'Общий размер',
+
+                    'selected': 'Выбрано',
+                    'source_duplicates': 'Дубликаты в источнике',
+                    'destination_duplicates': 'Дубликаты в назначении',
+                    'last_updated': 'Обновлен',
+                    'update_index': 'Обновить индекс',
+                    'multiple_indices_found': 'Найдено несколько индексов',
+                    'select_indices_to_update': 'Выберите индексы для обновления:',
+
+                    # Results and Actions
+                    'duplicate_manager': 'Менеджер дубликатов',
+                    'information': 'Информация',
+                    'filter': 'Фильтр',
+                    'regex_filter': 'Regex-фильтр:',
+                    'select_all_filtered': 'Выбрать все отфильтрованные',
+                    'deselect_all': 'Снять выделение',
+                    'delete_selected': 'Удалить выбранные файлы',
+                    'generate_script': 'Создать скрипт...',
+                    'index_col': 'Индекс',
+
+                    # Progress
+                    'initializing': 'Инициализация...',
+                    'scanning_files': 'Сканирование файлов...',
+                    'building_index': 'Построение индекса...',
+                    'finding_duplicates': 'Поиск дубликатов...',
+                    'cancel_button': 'Отмена',
+
+                    # Messages
+                    'no_results': 'Нет результатов поиска для экспорта.',
+                    'export_complete': 'Результаты экспортированы в:\n{}',
+                    'export_error': 'Не удалось экспортировать результаты:\n{}',
+                    'search_error': 'Поиск завершился ошибкой:\n{}',
+                    'no_duplicates': 'Дубликаты файлов не найдены.\n\nХотите начать новое сканирование?',
+                    'confirm_deletion': 'Вы уверены, что хотите навсегда удалить {} файлов ({})?\n\nЭто действие НЕЛЬЗЯ отменить.',
+                    'deletion_complete': 'Успешно удалено {} из {} выбранных файлов.',
+                    'script_generated': 'Скрипт удаления успешно сохранен в:\n{}',
+                    'ready_status': 'Готово к поиску по {} индексированным расположениям',
+                    'searching_status': 'Поиск...',
+                    'found_status': 'Найдено {} файлов по заданным критериям',
+                    'selected_status': 'Выбрано: {} файлов ({:.1f} MB)',
+                    'no_selection_status': 'Файлы не выбраны',
+                    'path_copied': 'Путь скопирован в буфер обмена: {}',
+                    'select_source': 'Выберите исходную папку',
+                    'select_dest': 'Добавьте хотя бы одну целевую папку',
+
+                    # Settings
+                    'language': 'Язык:',
+                    'default_hash': 'Алгоритм хеширования по умолчанию:',
+                    'auto_load_indices': 'Автозагрузка индексов при запуске',
+                    'index_locations': 'Пути поиска индексов:',
+                    'add_location': 'Добавить путь',
+                    'remove_location': 'Удалить путь',
+                    'apply_settings': 'Применить настройки',
+
+                    # Errors
+                    'error': 'Ошибка',
+                    'file_not_found': 'Файл больше не существует:\n{}',
+                    'invalid_regex': 'Некорректный regex-шаблон: {}',
+                    'invalid_size': 'Некорректный формат размера: {}',
+                    'invalid_date': 'Некорректный формат даты: {}',
+                    'scan_failed': 'Сканирование завершилось ошибкой:\n{}',
+                    'no_indices': 'Индексы поиска не найдены.',
+                    'no_selection': 'Файлы не выбраны.',
+                    'duplicate_folder': 'Эта папка уже в списке.',
                 }
             }
         

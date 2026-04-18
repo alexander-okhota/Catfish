@@ -47,14 +47,14 @@ def search_files_in_index(file_index: FileIndex, criteria: SearchCriteria, progr
             
             # Only optimize if NO internal wildcards (e.g. "te*xt" -> use Regex)
             if '*' not in clean_pat and '?' not in clean_pat:
-                simple_query = clean_pat.lower()
+                simple_query = clean_pat.casefold()
                 if is_start_star and is_end_star: query_type = 'contains'
                 elif is_start_star: query_type = 'endswith'
                 elif is_end_star: query_type = 'startswith'
         
         # Exact match logic (no wildcards)
         elif pat:
-             simple_query = pat.lower()
+             simple_query = pat.casefold()
              # FIX: Default to 'contains' to match user expectations (grep/explorer behavior)
              # This uses Linear Scan O(N). User must type "pat*" to get Binary Search O(log N).
              query_type = 'contains' 
@@ -147,7 +147,7 @@ def search_files_in_index(file_index: FileIndex, criteria: SearchCriteria, progr
 
         # Name Filtering
         if simple_query:
-            name_lower = entry.path.name.lower()
+            name_lower = entry.path.name.casefold()
             if query_type == 'contains':
                 # Python's 'in' operator is highly optimized in C
                 if simple_query not in name_lower: continue

@@ -23,13 +23,15 @@ class IndexCreationDialog:
         self.root = tk.Toplevel(parent)
         self.root.title("Create New Index")
         self.root.geometry("400x300")
-        self.root.resizable(False, False)
+        self.root.minsize(400, 300)
+        self.root.resizable(True, True)
         
         # Make modal
         self.root.transient(parent)
         self.root.grab_set()
         
         self.setup_ui()
+        self.adjust_dialog_size()
     
     def setup_ui(self):
         """Setup the dialog UI."""
@@ -75,6 +77,13 @@ class IndexCreationDialog:
         
         ttk.Button(button_frame, text="Create Index", command=self.create_index).pack(side=tk.LEFT)
         ttk.Button(button_frame, text="Cancel", command=self.cancel).pack(side=tk.RIGHT)
+
+    def adjust_dialog_size(self):
+        """Ensure all controls are visible on high-DPI displays."""
+        self.root.update_idletasks()
+        required_width = max(400, self.root.winfo_reqwidth() + 20)
+        required_height = max(300, self.root.winfo_reqheight() + 20)
+        self.root.geometry(f"{required_width}x{required_height}")
     
     def on_hash_toggle(self):
         """Handle hash toggle."""
